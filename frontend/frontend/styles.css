@@ -38,3 +38,30 @@ button:hover {
     max-width: 100%;
     border: 2px solid #333;
 }
+async function generateImage() {
+    const prompt = document.getElementById("prompt").value;
+    const resultDiv = document.getElementById("result");
+    resultDiv.innerHTML = "Génération de l'image en cours...";
+
+    try {
+        const response = await fetch("http://127.0.0.1:5000/generate", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ prompt })
+        });
+
+        const data = await response.json();
+        if (data.image) {
+            const img = new Image();
+            img.src = "data:image/png;base64," + data.image;
+            resultDiv.innerHTML = "";
+            resultDiv.appendChild(img);
+        } else {
+            resultDiv.innerHTML = `Erreur : ${data.error}`;
+        }
+    } catch (error) {
+        resultDiv.innerHTML = "Erreur lors de la connexion au serveur.";
+    }
+}
