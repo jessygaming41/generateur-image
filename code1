@@ -1,0 +1,36 @@
+generate-image-ai/
+├── backend/           # Pour le serveur qui gère l'IA
+│   ├── app.py         # Script Python (Flask ou FastAPI)
+│   ├── requirements.txt # Liste des dépendances Python
+├── frontend/          # Interface utilisateur
+│   ├── index.html     # Page HTML principale
+│   ├── styles.css     # (Facultatif) Styles CSS
+│   ├── script.js      # Script JavaScript pour l'interaction
+├── README.md          # Description de ton projet
+from flask import Flask, request, jsonify
+import requests
+
+app = Flask(__name__)
+
+# Token API Hugging Face à remplacer par le tien
+HUGGING_FACE_TOKEN = "TON_TOKEN_API"
+
+@app.route('/generate', methods=['POST'])
+def generate_image():
+    data = request.json
+    prompt = data.get('prompt', 'un homme musclé torse nu, style réaliste')
+
+    # Appel à l'API Hugging Face
+    response = requests.post(
+        "https://api-inference.huggingface.co/models/stabilityai/stable-diffusion-2",
+        headers={"Authorization": f"Bearer {HUGGING_FACE_TOKEN}"},
+        json={"inputs": prompt}
+    )
+
+    if response.status_code == 200:
+        return jsonify({"image": response.content.decode("utf-8")})
+    else:
+        return jsonify({"error": "Erreur lors de la génération"}), 500
+
+if __name__ == "__main__":
+    app.run(debug=True)
