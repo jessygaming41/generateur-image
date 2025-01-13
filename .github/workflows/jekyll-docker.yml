@@ -18,3 +18,29 @@ jobs:
         docker run \
         -v ${{ github.workspace }}:/srv/jekyll -v ${{ github.workspace }}/_site:/srv/jekyll/_site \
         jekyll/builder:latest /bin/bash -c "chmod -R 777 /srv/jekyll && jekyll build --future"
+name: Python application
+
+on:
+  push:
+    branches:
+      - main  # Cette action s'exécute chaque fois que vous poussez sur la branche "main"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest  # Utilise un serveur Linux pour exécuter les tâches
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2   # Prend votre code depuis GitHub
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'  # Choisissez la version de Python que vous souhaitez
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt  # Installe les bibliothèques nécessaires
+
+      - name: Run Python script
+        run: python main.py  # Exécute votre fichier Python
